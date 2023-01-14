@@ -13,4 +13,8 @@ Install
   
 Use  
 =====
-Two new buttons at the top-right of the galaxy map.  
+New buttons at top-left of galaxy map.  All buttons ignore current sector.  "Nearest" is as the crow flies, not necessarilly number of warps required.  
+
+- Nearest quest selects nearest sector with active quest.  
+- Nearest ravager selects nearest sector with discovered and unkilled ravager.  
+- Nearest CoT station selects nearest sector with discovered CoT station.  
