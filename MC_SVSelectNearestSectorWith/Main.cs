@@ -12,10 +12,11 @@ namespace MC_SVSelectClosestSectorWith
     {
         public const string pluginGuid = "mc.starvalor.selectclosestsectorwithquest";
         public const string pluginName = "SV Select Closest Sector with...";
-        public const string pluginVersion = "1.0.0";
+        public const string pluginVersion = "1.0.1";
 
         private static GameObject questButton;
         private static GameObject ravagerButton;
+        private static GameObject cotButton;
 
         public void Awake()
         {
@@ -46,6 +47,7 @@ namespace MC_SVSelectClosestSectorWith
                     );
                 questButton.transform.localScale = ___sliderFactionInfluence.transform.localScale;
             }
+            questButton.SetActive(__instance.gameObject.activeSelf);            
 
             if (ravagerButton == null)
             {
@@ -67,9 +69,63 @@ namespace MC_SVSelectClosestSectorWith
                     );
                 ravagerButton.transform.localScale = questButton.transform.localScale;
             }
-
-            questButton.SetActive(__instance.gameObject.activeSelf);
             ravagerButton.SetActive(__instance.gameObject.activeSelf);
+
+            if (cotButton == null)
+            {
+                cotButton = Instantiate(___BtnWarp);
+                cotButton.name = "BtnFindNearestCoT";
+                Destroy(cotButton.transform.Find("Cost").gameObject);
+                cotButton.SetActive(true);
+                cotButton.GetComponentInChildren<Text>().text = "Nearest CoT Station";
+                cotButton.SetActive(false);
+                Button.ButtonClickedEvent btnClickEvent = new Button.ButtonClickedEvent();
+                btnClickEvent.AddListener(new UnityAction(CotButtonClick));
+                cotButton.GetComponentInChildren<Button>().onClick = btnClickEvent;
+                cotButton.transform.SetParent(questButton.transform.parent);
+                cotButton.layer = questButton.gameObject.layer;
+                cotButton.transform.localPosition = new Vector3(
+                    ___sliderFactionInfluence.transform.localPosition.x - (___BtnWarp.GetComponentInChildren<RectTransform>().rect.x),
+                    ravagerButton.transform.localPosition.y + (___BtnWarp.GetComponentInChildren<RectTransform>().rect.y * 1.1f),
+                    ravagerButton.transform.localPosition.z
+                    );
+                cotButton.transform.localScale = questButton.transform.localScale;
+            }
+            cotButton.SetActive(__instance.gameObject.activeSelf);
+        }
+
+        private static void CotButtonClick()
+        {
+            if (GalaxyMap.instance == null)
+                return;
+
+            TSector curSector = GameData.data.GetCurrentSector();
+            TSector closestSector = null;
+            float distance = 0;
+
+            for (int i = 0; i < GameData.data.sectors.Count; i++)
+            {
+                if (GameData.data.sectors[i].discovered &&
+                    GameData.data.sectors[i] != curSector)
+                {
+                    Station station = null;
+                    station = GameData.data.sectors[i].GetStation((int)TFaction.Rebels, null);
+                    if (station != null && station.discovered)
+                    {
+                        float tempDist = Mathf.Abs(Vector2.Distance(curSector.realPosV2, GameData.data.sectors[i].realPosV2));
+                        if (distance == 0 || tempDist < distance)
+                        {
+                            closestSector = GameData.data.sectors[i];
+                            distance = tempDist;
+                        }
+                    }
+                }
+            }
+
+            if (closestSector == null)
+                InfoPanelControl.inst.ShowWarning("No CoT station found.", 1, false);
+            else
+                GalaxyMap.instance.MoveCameraTo(closestSector, true);
         }
 
         private static void RavagerBtnClick()
