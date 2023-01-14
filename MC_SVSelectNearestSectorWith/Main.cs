@@ -12,7 +12,7 @@ namespace MC_SVSelectClosestSectorWith
     {
         public const string pluginGuid = "mc.starvalor.selectclosestsectorwithquest";
         public const string pluginName = "SV Select Closest Sector with...";
-        public const string pluginVersion = "1.0.1";
+        public const string pluginVersion = "1.0.2";
 
         private static GameObject questButton;
         private static GameObject ravagerButton;
@@ -110,7 +110,7 @@ namespace MC_SVSelectClosestSectorWith
                 {
                     Station station = null;
                     station = GameData.data.sectors[i].GetStation((int)TFaction.Rebels, null);
-                    if (station != null && station.discovered)
+                    if (station != null && station.discovered && !station.destroyed)
                     {
                         float tempDist = Mathf.Abs(Vector2.Distance(curSector.realPosV2, GameData.data.sectors[i].realPosV2));
                         if (distance == 0 || tempDist < distance)
