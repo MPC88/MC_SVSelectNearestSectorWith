@@ -5,22 +5,34 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace MC_SVSelectClosestSectorWith
+namespace MC_SVSelectNearestSectorWith
 {
     [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
     public class Main : BaseUnityPlugin
     {
         public const string pluginGuid = "mc.starvalor.selectclosestsectorwithquest";
         public const string pluginName = "SV Select Closest Sector with...";
-        public const string pluginVersion = "1.0.2";
+        public const string pluginVersion = "1.0.3";
 
         private static GameObject questButton;
         private static GameObject ravagerButton;
         private static GameObject cotButton;
+        private static GameObject marketSearchButton;        
 
         public void Awake()
         {
             Harmony.CreateAndPatchAll(typeof(Main));
+            LoadAssets();
+        }
+
+        private void LoadAssets()
+        {
+            string pluginfolder = System.IO.Path.GetDirectoryName(GetType().Assembly.Location);
+            string bundleName = "mc_svselectnearestsectorwith";
+            AssetBundle assets = AssetBundle.LoadFromFile($"{pluginfolder}\\{bundleName}");
+            GameObject pack = assets.LoadAsset<GameObject>("Assets/mc_marketsearch.prefab");
+            Assets.marketSearchPanel = pack.transform.Find("mc_marketSearchPanel").gameObject;
+            Assets.marketSearchResultItem = pack.transform.Find("mc_marketSearchItem").gameObject;
         }
 
         [HarmonyPatch(typeof(GalaxyMap), nameof(GalaxyMap.ShowHideGalaxyMap))]
@@ -92,6 +104,50 @@ namespace MC_SVSelectClosestSectorWith
                 cotButton.transform.localScale = questButton.transform.localScale;
             }
             cotButton.SetActive(__instance.gameObject.activeSelf);
+
+            if (marketSearchButton == null)
+            {
+                marketSearchButton = Instantiate(___BtnWarp);
+                marketSearchButton.name = "BtnMarketSearch";
+                Destroy(marketSearchButton.transform.Find("Cost").gameObject);
+                marketSearchButton.SetActive(true);
+                marketSearchButton.GetComponentInChildren<Text>().text = "Market Search";
+                marketSearchButton.SetActive(false);
+                marketSearchButton.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
+                Button.ButtonClickedEvent btnClickEvent = new Button.ButtonClickedEvent();
+                btnClickEvent.AddListener(() => { MarketButtonClick(__instance); });
+                marketSearchButton.GetComponentInChildren<Button>().onClick = btnClickEvent;
+                marketSearchButton.transform.SetParent(questButton.transform.parent);
+                marketSearchButton.layer = questButton.gameObject.layer;
+                marketSearchButton.transform.localPosition = new Vector3(
+                    ___sliderFactionInfluence.transform.localPosition.x - (___BtnWarp.GetComponentInChildren<RectTransform>().rect.x),
+                    cotButton.transform.localPosition.y + (___BtnWarp.GetComponentInChildren<RectTransform>().rect.y * 1.1f),
+                    cotButton.transform.localPosition.z
+                    );
+                marketSearchButton.transform.localScale = questButton.transform.localScale;
+            }
+            marketSearchButton.SetActive(__instance.gameObject.activeSelf);
+
+            if (MarketSearch.marketSearchPanel == null)
+            {
+                MarketSearch.marketSearchPanel = GameObject.Instantiate(Assets.marketSearchPanel);
+                MarketSearch.marketSearchPanel.transform.SetParent(questButton.transform.parent);
+                MarketSearch.marketSearchPanel.layer = questButton.layer;
+                MarketSearch.marketSearchPanel.transform.localPosition = new Vector3(
+                    ___sliderFactionInfluence.transform.localPosition.x - (MarketSearch.marketSearchPanel.GetComponentInChildren<RectTransform>().rect.x),
+                    marketSearchButton.transform.localPosition.y + MarketSearch.marketSearchPanel.GetComponentInChildren<RectTransform>().rect.y,
+                    marketSearchButton.transform.localPosition.z
+                    );
+                MarketSearch.marketSearchPanel.transform.localScale = questButton.transform.localScale;
+                MarketSearch.marketSearchPanel.SetActive(false);
+            }
+            if (MarketSearch.marketSearchPanel != null && MarketSearch.marketSearchPanel.activeSelf)
+                MarketSearch.marketSearchPanel.SetActive(__instance.gameObject.activeSelf);
+        }
+
+        private static void MarketButtonClick(GalaxyMap galaxyMap)
+        {
+            MarketSearch.SetActive(true, galaxyMap);
         }
 
         private static void CotButtonClick()
