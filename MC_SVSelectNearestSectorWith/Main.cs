@@ -12,12 +12,14 @@ namespace MC_SVSelectNearestSectorWith
     {
         public const string pluginGuid = "mc.starvalor.selectclosestsectorwithquest";
         public const string pluginName = "SV Select Closest Sector with...";
-        public const string pluginVersion = "1.0.3";
+        public const string pluginVersion = "1.0.4";
 
         private static GameObject questButton;
         private static GameObject ravagerButton;
         private static GameObject cotButton;
-        private static GameObject marketSearchButton;        
+        private static GameObject marketSearchButton;
+
+        internal static ManualLogSource log = BepInEx.Logging.Logger.CreateLogSource(pluginName);
 
         public void Awake()
         {

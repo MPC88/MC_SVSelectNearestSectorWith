@@ -24,36 +24,42 @@ namespace MC_SVSelectNearestSectorWith
         private static Button searchBtn;
         private static Button closeBtn;
 
-        private static bool firstRun = true;
         private static GalaxyMap galaxyMapInstance;
         private static ItemType selectedItemType = ItemType.weapon;
         private static SortMethod selectedSortMethod = SortMethod.price;
         private static GameObject goCurrentHighlight = null;
+        private static List<ResultItem> results = new List<ResultItem>();
 
         internal static void SetActive(bool active, GalaxyMap galaxyMap)
         {
             if (marketSearchPanel == null)
-                return;
-
-            if (firstRun)
             {
-                InitPanel();
-                firstRun = false;
+                Main.log.LogError("Null market serach panel.");
+                return;
             }
+
+            if (!itemTypeDropdown || !sortMethodDropdown || !inputField ||
+                !resultList || !searchBtn || !closeBtn)
+                InitPanel();
 
             galaxyMapInstance = galaxyMap;
             marketSearchPanel.SetActive(active);
 
             if (active)
             {
-                galaxyMapInstance.BlockMapMovement(true);
+                if (galaxyMapInstance == null)
+                {
+                    Main.log.LogError("Null galaxy map.");
+                    return;
+                }
                 AccessTools.FieldRefAccess<bool>(typeof(GalaxyMap), "dragging")(galaxyMapInstance) = false;
                 GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().blockKeyboard = true;
+                if (results.Count > 0)
+                    DisplayResults();
                 inputField.Select();
             }
             else
             {
-                galaxyMapInstance.BlockMapMovement(false);
                 GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().blockKeyboard = false;
             }
         }
@@ -109,6 +115,9 @@ namespace MC_SVSelectNearestSectorWith
 
         private static void SearchButtonClick()
         {
+            // Clear
+            results.Clear();
+
             // Get target item(s)
             List<int> ids = GetItemIDs();
             if (ids == null || ids.Count == 0)
@@ -118,9 +127,7 @@ namespace MC_SVSelectNearestSectorWith
             }
 
             // Get results
-            List<ResultItem> results = new List<ResultItem>();
             results = GetResults(ids);
-
             if (results == null || results.Count == 0)
             {
                 InfoPanelControl.inst.ShowWarning("No results found.", 1, false);
@@ -139,9 +146,14 @@ namespace MC_SVSelectNearestSectorWith
             }
 
             // Display results
+            DisplayResults();
+        }
+
+        private static void DisplayResults()
+        {
             DestroyAllChildren(resultList.transform);
             resultList.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, listItemSpacing * (results.Count + 2));
-            for(int i = -1; i < results.Count; i++)
+            for (int i = -1; i < results.Count; i++)
             {
                 GameObject listItem = null;
                 if (i == -1)
@@ -150,7 +162,7 @@ namespace MC_SVSelectNearestSectorWith
                     listItem = CreateResultListItem(results[i]);
 
                 listItem.transform.localPosition = new Vector3(
-                    listItem.transform.localPosition.x,
+                    listItem.transform.localPosition.x + 0.02f,
                     -listItemSpacing * (i + 1),
                     listItem.transform.localPosition.z);
             }
