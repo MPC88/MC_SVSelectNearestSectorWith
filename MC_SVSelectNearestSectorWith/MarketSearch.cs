@@ -11,7 +11,7 @@ namespace MC_SVSelectNearestSectorWith
     internal class MarketSearch
     {
         private enum ItemType { none, weapon, equipment, generic, ship };
-        private enum SortMethod { price, distance };
+        private enum SortMethod { price, distance, rarity };
 
         private const int listItemSpacing = 14;
 
@@ -54,9 +54,9 @@ namespace MC_SVSelectNearestSectorWith
                 }
                 AccessTools.FieldRefAccess<bool>(typeof(GalaxyMap), "dragging")(galaxyMapInstance) = false;
                 GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerControl>().blockKeyboard = true;
+                inputField.Select();
                 if (results.Count > 0)
                     DisplayResults();
-                inputField.Select();
             }
             else
             {
@@ -88,6 +88,7 @@ namespace MC_SVSelectNearestSectorWith
             sortMethodDropdown.options.Clear();
             sortMethodDropdown.options.Add(new Dropdown.OptionData("Price"));
             sortMethodDropdown.options.Add(new Dropdown.OptionData("Distance"));
+            sortMethodDropdown.options.Add(new Dropdown.OptionData("Rarity"));
 
             ButtonClickedEvent searchButtonEvent = new ButtonClickedEvent();
             searchButtonEvent.AddListener(SearchButtonClick);
@@ -143,6 +144,9 @@ namespace MC_SVSelectNearestSectorWith
                 case SortMethod.distance:
                     results.Sort(ResultItem.CompareDistance);
                     break;
+                case SortMethod.rarity:
+                    results.Sort(ResultItem.ComparRarity);
+                    break;
             }
 
             // Display results
@@ -162,10 +166,11 @@ namespace MC_SVSelectNearestSectorWith
                     listItem = CreateResultListItem(results[i]);
 
                 listItem.transform.localPosition = new Vector3(
-                    listItem.transform.localPosition.x + 0.02f,
+                    listItem.transform.localPosition.x + 5f,
                     -listItemSpacing * (i + 1),
                     listItem.transform.localPosition.z);
             }
+            resultList.GetComponentInParent<ScrollRect>().verticalScrollbar.value = 1;
         }
 
         private static void ResultItemClick(PointerEventData pointerEventData, ResultItem item)
@@ -194,8 +199,9 @@ namespace MC_SVSelectNearestSectorWith
             resultListItem.transform.SetParent(resultList.transform, false);
             resultListItem.transform.localScale = resultList.transform.localScale;
             resultListItem.layer = resultList.layer;
-            resultListItem.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, resultList.GetComponent<RectTransform>().rect.width - 0.02f);
+            resultListItem.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, resultList.GetComponent<RectTransform>().rect.width - 0.1f);
 
+            // Populate
             if (resultItem == null)
             {
                 resultListItem.transform.Find("ItemName").GetComponent<Text>().text = "<b>Item Name</b>";
@@ -353,6 +359,16 @@ namespace MC_SVSelectNearestSectorWith
                 if (x.distance > y.distance)
                     return 1;
                 else if (x.distance < y.distance)
+                    return -1;
+                else
+                    return 0;
+            }
+
+            internal static int ComparRarity(ResultItem x, ResultItem y)
+            {
+                if (x.rarity < y.rarity)
+                    return 1;
+                else if (x.rarity > y.rarity)
                     return -1;
                 else
                     return 0;
