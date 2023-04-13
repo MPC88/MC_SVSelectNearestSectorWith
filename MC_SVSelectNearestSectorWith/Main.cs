@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
@@ -12,12 +13,15 @@ namespace MC_SVSelectNearestSectorWith
     {
         public const string pluginGuid = "mc.starvalor.selectclosestsectorwithquest";
         public const string pluginName = "SV Select Closest Sector with...";
-        public const string pluginVersion = "1.0.5";
+        public const string pluginVersion = "1.0.6";
 
         private static GameObject questButton;
         private static GameObject ravagerButton;
         private static GameObject cotButton;
         private static GameObject marketSearchButton;
+
+        internal static ConfigEntry<int> lastType;
+        internal static ConfigEntry<int> lastSort;
 
         internal static ManualLogSource log = BepInEx.Logging.Logger.CreateLogSource(pluginName);
 
@@ -25,6 +29,15 @@ namespace MC_SVSelectNearestSectorWith
         {
             Harmony.CreateAndPatchAll(typeof(Main));
             LoadAssets();
+
+            lastType = Config.Bind<int>("Memory",
+                "lastType",
+                0,
+                "");
+            lastSort = Config.Bind<int>("Memory",
+                "lastSort",
+                0,
+                "");
         }
 
         private void LoadAssets()
@@ -35,6 +48,12 @@ namespace MC_SVSelectNearestSectorWith
             GameObject pack = assets.LoadAsset<GameObject>("Assets/mc_marketsearch.prefab");
             Assets.marketSearchPanel = pack.transform.Find("mc_marketSearchPanel").gameObject;
             Assets.marketSearchResultItem = pack.transform.Find("mc_marketSearchItem").gameObject;
+        }
+
+        public void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Return))
+                MarketSearch.EnterPress();
         }
 
         [HarmonyPatch(typeof(GalaxyMap), nameof(GalaxyMap.ShowHideGalaxyMap))]

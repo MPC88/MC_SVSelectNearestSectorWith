@@ -81,6 +81,7 @@ namespace MC_SVSelectNearestSectorWith
             itemTypeDropdown.options.Add(new Dropdown.OptionData("Equipment"));
             itemTypeDropdown.options.Add(new Dropdown.OptionData("Trade Good"));
             itemTypeDropdown.options.Add(new Dropdown.OptionData("Ship"));
+            itemTypeDropdown.value = Main.lastType.Value;
 
             DropdownEvent sortMethodSelectEvent = new DropdownEvent();
             sortMethodSelectEvent.AddListener(SortMethodSelect);
@@ -89,6 +90,7 @@ namespace MC_SVSelectNearestSectorWith
             sortMethodDropdown.options.Add(new Dropdown.OptionData("Price"));
             sortMethodDropdown.options.Add(new Dropdown.OptionData("Distance"));
             sortMethodDropdown.options.Add(new Dropdown.OptionData("Rarity"));
+            sortMethodDropdown.value = Main.lastSort.Value;
 
             ButtonClickedEvent searchButtonEvent = new ButtonClickedEvent();
             searchButtonEvent.AddListener(SearchButtonClick);
@@ -112,6 +114,14 @@ namespace MC_SVSelectNearestSectorWith
         private static void SortMethodSelect(int value)
         {
             selectedSortMethod = (SortMethod)value;
+        }
+
+        internal static void EnterPress()
+        {
+            if (marketSearchPanel != null &&
+                marketSearchPanel.activeSelf &&
+                EventSystem.current.currentSelectedGameObject == inputField.gameObject)
+                SearchButtonClick();
         }
 
         private static void SearchButtonClick()
@@ -148,6 +158,10 @@ namespace MC_SVSelectNearestSectorWith
                     results.Sort(ResultItem.ComparRarity);
                     break;
             }
+
+            // Save settings used
+            Main.lastSort.Value = sortMethodDropdown.value;
+            Main.lastType.Value = itemTypeDropdown.value;
 
             // Display results
             DisplayResults();
