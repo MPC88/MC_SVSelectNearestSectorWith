@@ -14,6 +14,7 @@ namespace MC_SVSelectNearestSectorWith
         private enum SortMethod { price, distance, rarity };
 
         private const int listItemSpacing = 14;
+        private const int blueprintID = 54;
 
         internal static GameObject marketSearchPanel;
 
@@ -227,21 +228,28 @@ namespace MC_SVSelectNearestSectorWith
             else
             {
                 // ItemName
+                resultListItem.transform.Find("ItemName").GetComponent<Text>().text = "";
+                if (resultItem.blueprint)
+                {
+                    resultListItem.transform.Find("ItemName").GetComponent<Text>().text += ItemDB.GetRarityColor(resultItem.rarity) + "*</color>";
+                }
+
                 switch (selectedItemType)
                 {
                     case ItemType.weapon:
-                        resultListItem.transform.Find("ItemName").GetComponent<Text>().text = GameData.data.weaponList[resultItem.itemID].GetNameModified(resultItem.rarity, 0);
+                        resultListItem.transform.Find("ItemName").GetComponent<Text>().text += GameData.data.weaponList[resultItem.itemID].GetNameModified(resultItem.rarity, 0);
                         break;
                     case ItemType.equipment:
-                        resultListItem.transform.Find("ItemName").GetComponent<Text>().text = EquipmentDB.GetEquipment(resultItem.itemID).GetNameModified(resultItem.rarity, 0);
+                        resultListItem.transform.Find("ItemName").GetComponent<Text>().text += EquipmentDB.GetEquipment(resultItem.itemID).GetNameModified(resultItem.rarity, 0);
                         break;
                     case ItemType.generic:
-                        resultListItem.transform.Find("ItemName").GetComponent<Text>().text = ItemDB.GetItemNameModified(resultItem.itemID, 0);
+                        resultListItem.transform.Find("ItemName").GetComponent<Text>().text += ItemDB.GetItemNameModified(resultItem.itemID, 0);
                         break;
                     case ItemType.ship:
-                        resultListItem.transform.Find("ItemName").GetComponent<Text>().text = ShipDB.GetModel(resultItem.itemID).GetModelNameModified(0).Replace("<size=14>", "").Replace("</size>", "");
+                        resultListItem.transform.Find("ItemName").GetComponent<Text>().text += ShipDB.GetModel(resultItem.itemID).GetModelNameModified(0).Replace("<size=14>", "").Replace("</size>", "");
                         break;
                 }
+
                 //Station
                 resultListItem.transform.Find("Station").GetComponent<Text>().text = resultItem.station;
                 //Sector
@@ -312,19 +320,39 @@ namespace MC_SVSelectNearestSectorWith
                 {
                     foreach (MarketItem marketItem in station.market)
                     {
-                        if (marketItem.itemType == (int)selectedItemType &&
-                            marketItem.stock > 0 &&
-                           ids.Contains(marketItem.itemID))
+                        if (marketItem.stock > 0)
                         {
-                            results.Add(new ResultItem()
+                            if(marketItem.itemType == (int)selectedItemType &&
+                             ids.Contains(marketItem.itemID))
                             {
-                                itemID = marketItem.itemID,
-                                station = station.stationName,
-                                price = GetPrice(station, marketItem, playerSS),
-                                rarity = marketItem.rarity,
-                                sectorID = station.sectorIndex,
-                                distance = Mathf.Abs(Vector2.Distance(GameData.data.sectors[GameData.data.currentSectorIndex].realPosV2, GameData.data.sectors[station.sectorIndex].realPosV2))
-                            }); ;
+                                results.Add(new ResultItem()
+                                {
+                                    itemID = marketItem.itemID,
+                                    station = station.stationName,
+                                    price = GetPrice(station, marketItem, playerSS),
+                                    rarity = marketItem.rarity,
+                                    sectorID = station.sectorIndex,
+                                    distance = Mathf.Abs(Vector2.Distance(GameData.data.sectors[GameData.data.currentSectorIndex].realPosV2, GameData.data.sectors[station.sectorIndex].realPosV2)),
+                                    blueprint = false
+                                });
+                            }
+                            else if (marketItem.itemType == (int)ItemType.generic &&
+                              marketItem.itemID == 54 &&
+                              marketItem.extraData is CI_Data_Blueprint &&
+                              marketItem.extraData.genItem.itemType == (int)selectedItemType &&
+                              ids.Contains(marketItem.extraData.genItem.itemID))
+                            {
+                                results.Add(new ResultItem()
+                                {
+                                    itemID = marketItem.extraData.genItem.itemID,
+                                    station = station.stationName,
+                                    price = GetPrice(station, marketItem, playerSS),
+                                    rarity = marketItem.extraData.genItem.rarity,
+                                    sectorID = station.sectorIndex,
+                                    distance = Mathf.Abs(Vector2.Distance(GameData.data.sectors[GameData.data.currentSectorIndex].realPosV2, GameData.data.sectors[station.sectorIndex].realPosV2)),
+                                    blueprint = true
+                                });
+                            }
                         }
                     }
                 }
@@ -357,6 +385,7 @@ namespace MC_SVSelectNearestSectorWith
             internal int rarity;
             internal int sectorID;
             internal float distance;
+            internal bool blueprint;
 
             internal static int ComparePrice(ResultItem x, ResultItem y)
             {
