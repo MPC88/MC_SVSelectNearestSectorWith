@@ -17,5 +17,5 @@ New buttons at top-left of galaxy map.  All buttons ignore current sector.  "Nea
 
 - Nearest quest selects nearest sector with active quest.  
 - Nearest ravager selects nearest sector with discovered and unkilled ravager.  
-- Nearest CoT station selects nearest sector with discovered CoT station.  
+- Nearest station provides a new set of buttons to pick a faction and then selects nearest sector with discovered station of that faction.  
 - Market search opens dialog to search for item types in all visited stations which have not been destroyed.  Results can be sorted by price or distance from current location.  
