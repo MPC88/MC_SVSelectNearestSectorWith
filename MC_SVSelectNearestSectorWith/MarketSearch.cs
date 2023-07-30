@@ -43,7 +43,8 @@ namespace MC_SVSelectNearestSectorWith
                 !resultList || !searchBtn || !closeBtn)
                 InitPanel();
 
-            galaxyMapInstance = galaxyMap;
+            if(galaxyMap != null)
+                galaxyMapInstance = galaxyMap;
             marketSearchPanel.SetActive(active);
 
             if (active)
@@ -123,6 +124,13 @@ namespace MC_SVSelectNearestSectorWith
                 marketSearchPanel.activeSelf &&
                 EventSystem.current.currentSelectedGameObject == inputField.gameObject)
                 SearchButtonClick();
+        }
+
+        internal static void EscapePress()
+        {
+            if (marketSearchPanel != null &&
+                marketSearchPanel.activeSelf)
+                CloseButtonClick();
         }
 
         private static void SearchButtonClick()

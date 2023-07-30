@@ -2,6 +2,8 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -13,11 +15,12 @@ namespace MC_SVSelectNearestSectorWith
     {
         public const string pluginGuid = "mc.starvalor.selectclosestsectorwithquest";
         public const string pluginName = "SV Select Closest Sector with...";
-        public const string pluginVersion = "1.0.7";
+        public const string pluginVersion = "1.0.8";
 
         private static GameObject questButton;
         private static GameObject ravagerButton;
-        private static GameObject cotButton;
+        private static GameObject stationButton;
+        private static List<GameObject> factionButtons;
         private static GameObject marketSearchButton;
 
         internal static ConfigEntry<int> lastType;
@@ -54,6 +57,8 @@ namespace MC_SVSelectNearestSectorWith
         {
             if (Input.GetKeyDown(KeyCode.Return))
                 MarketSearch.EnterPress();
+            else if (Input.GetKeyDown(KeyCode.Escape))
+                MarketSearch.EscapePress();
         }
 
         [HarmonyPatch(typeof(GalaxyMap), nameof(GalaxyMap.ShowHideGalaxyMap))]
@@ -104,27 +109,53 @@ namespace MC_SVSelectNearestSectorWith
             }
             ravagerButton.SetActive(__instance.gameObject.activeSelf);
 
-            if (cotButton == null)
+            if (stationButton == null)
             {
-                cotButton = Instantiate(___BtnWarp);
-                cotButton.name = "BtnFindNearestCoT";
-                Destroy(cotButton.transform.Find("Cost").gameObject);
-                cotButton.SetActive(true);
-                cotButton.GetComponentInChildren<Text>().text = "Nearest CoT Station";
-                cotButton.SetActive(false);
+                stationButton = Instantiate(___BtnWarp);
+                stationButton.name = "BtnFindNearestStation";
+                Destroy(stationButton.transform.Find("Cost").gameObject);
+                stationButton.SetActive(true);
+                stationButton.GetComponentInChildren<Text>().text = "Nearest Station";
+                stationButton.SetActive(false);
                 Button.ButtonClickedEvent btnClickEvent = new Button.ButtonClickedEvent();
-                btnClickEvent.AddListener(new UnityAction(CotButtonClick));
-                cotButton.GetComponentInChildren<Button>().onClick = btnClickEvent;
-                cotButton.transform.SetParent(questButton.transform.parent);
-                cotButton.layer = questButton.gameObject.layer;
-                cotButton.transform.localPosition = new Vector3(
+                btnClickEvent.AddListener(new UnityAction(StationButtonClick));
+                stationButton.GetComponentInChildren<Button>().onClick = btnClickEvent;
+                stationButton.transform.SetParent(questButton.transform.parent);
+                stationButton.layer = questButton.gameObject.layer;
+                stationButton.transform.localPosition = new Vector3(
                     ___sliderFactionInfluence.transform.localPosition.x - (___BtnWarp.GetComponentInChildren<RectTransform>().rect.x),
                     ravagerButton.transform.localPosition.y + (___BtnWarp.GetComponentInChildren<RectTransform>().rect.y * 1.1f),
                     ravagerButton.transform.localPosition.z
                     );
-                cotButton.transform.localScale = questButton.transform.localScale;
+                stationButton.transform.localScale = questButton.transform.localScale;
+
+                factionButtons = new List<GameObject>();
+
+                for (int i = 0; i < 7; i ++)
+                {
+                    GameObject btn = Instantiate(___BtnWarp);
+                    btn.name = "BtnFaction" + i;
+                    Destroy(btn.transform.Find("Cost").gameObject);
+                    btn.SetActive(true);
+                    btn.GetComponentInChildren<Text>().text = FactionDB.GetFaction(i).factionName;
+                    btn.SetActive(false);
+                    Button.ButtonClickedEvent btnEvent = new Button.ButtonClickedEvent();
+                    int ci = i;
+                    btnEvent.AddListener(() => FactionButtonClick(ci));
+                    btn.GetComponentInChildren<Button>().onClick = btnEvent;
+                    btn.transform.SetParent(questButton.transform.parent);
+                    btn.layer = questButton.gameObject.layer;
+                    btn.transform.localPosition = new Vector3(
+                        stationButton.transform.localPosition.x - ((stationButton.GetComponentInChildren<RectTransform>().rect.x) * 2.1f),
+                        stationButton.transform.localPosition.y + ((___BtnWarp.GetComponentInChildren<RectTransform>().rect.y * 1.1f) * i),
+                        stationButton.transform.localPosition.z
+                        );
+                    btn.transform.localScale = questButton.transform.localScale;
+                    factionButtons.Add(btn);
+                }
             }
-            cotButton.SetActive(__instance.gameObject.activeSelf);
+            stationButton.SetActive(__instance.gameObject.activeSelf);
+            factionButtons.ForEach(x => x.SetActive(false));
 
             if (marketSearchButton == null)
             {
@@ -142,8 +173,8 @@ namespace MC_SVSelectNearestSectorWith
                 marketSearchButton.layer = questButton.gameObject.layer;
                 marketSearchButton.transform.localPosition = new Vector3(
                     ___sliderFactionInfluence.transform.localPosition.x - (___BtnWarp.GetComponentInChildren<RectTransform>().rect.x),
-                    cotButton.transform.localPosition.y + (___BtnWarp.GetComponentInChildren<RectTransform>().rect.y * 1.1f),
-                    cotButton.transform.localPosition.z
+                    stationButton.transform.localPosition.y + (___BtnWarp.GetComponentInChildren<RectTransform>().rect.y * 1.1f),
+                    stationButton.transform.localPosition.z
                     );
                 marketSearchButton.transform.localScale = questButton.transform.localScale;
             }
@@ -171,7 +202,12 @@ namespace MC_SVSelectNearestSectorWith
             MarketSearch.SetActive(true, galaxyMap);
         }
 
-        private static void CotButtonClick()
+        private static void StationButtonClick()
+        {
+            factionButtons.ForEach(x => x.SetActive(true));
+        }
+
+        private static void FactionButtonClick(int faction)
         {
             if (GalaxyMap.instance == null)
                 return;
@@ -186,7 +222,7 @@ namespace MC_SVSelectNearestSectorWith
                     GameData.data.sectors[i] != curSector)
                 {
                     Station station = null;
-                    station = GameData.data.sectors[i].GetStation((int)TFaction.Rebels, null);
+                    station = GameData.data.sectors[i].GetStation(faction, null);
                     if (station != null && station.discovered && !station.destroyed)
                     {
                         float tempDist = Mathf.Abs(Vector2.Distance(curSector.realPosV2, GameData.data.sectors[i].realPosV2));
@@ -200,9 +236,11 @@ namespace MC_SVSelectNearestSectorWith
             }
 
             if (closestSector == null)
-                InfoPanelControl.inst.ShowWarning("No CoT station found.", 1, false);
+                InfoPanelControl.inst.ShowWarning("No station found.", 1, false);
             else
                 GalaxyMap.instance.MoveCameraTo(closestSector, true);
+
+            factionButtons.ForEach(x => x.SetActive(false));
         }
 
         private static void RavagerBtnClick()
