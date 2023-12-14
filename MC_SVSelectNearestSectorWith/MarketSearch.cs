@@ -73,25 +73,27 @@ namespace MC_SVSelectNearestSectorWith
             inputField = marketSearchPanel.transform.Find("mc_marketSearchInput").GetComponent<InputField>();
             resultList = marketSearchPanel.transform.Find("mc_marketSearchResultList").GetChild(0).GetChild(0).gameObject;
             searchBtn = marketSearchPanel.transform.Find("mc_marketSearchSearch").GetComponent<Button>();
+            searchBtn.GetComponentInChildren<Text>().text = Language.Search;
             closeBtn = marketSearchPanel.transform.Find("mc_marketSearchClose").GetComponent<Button>();
+            closeBtn.GetComponentInChildren<Text>().text = Language.Close;
 
             DropdownEvent itemTypeSelectEvent = new DropdownEvent();
             itemTypeSelectEvent.AddListener(ItemTypeSelect);
             itemTypeDropdown.onValueChanged = itemTypeSelectEvent;
             itemTypeDropdown.options.Clear();
-            itemTypeDropdown.options.Add(new Dropdown.OptionData("Weapon"));
-            itemTypeDropdown.options.Add(new Dropdown.OptionData("Equipment"));
-            itemTypeDropdown.options.Add(new Dropdown.OptionData("Trade Good"));
-            itemTypeDropdown.options.Add(new Dropdown.OptionData("Ship"));
+            itemTypeDropdown.options.Add(new Dropdown.OptionData(Language.Weapon));
+            itemTypeDropdown.options.Add(new Dropdown.OptionData(Language.Equipment));
+            itemTypeDropdown.options.Add(new Dropdown.OptionData(Language.TradeGood));
+            itemTypeDropdown.options.Add(new Dropdown.OptionData(Language.Ship));
             itemTypeDropdown.value = Main.lastType.Value;
 
             DropdownEvent sortMethodSelectEvent = new DropdownEvent();
             sortMethodSelectEvent.AddListener(SortMethodSelect);
             sortMethodDropdown.onValueChanged = sortMethodSelectEvent;
             sortMethodDropdown.options.Clear();
-            sortMethodDropdown.options.Add(new Dropdown.OptionData("Price"));
-            sortMethodDropdown.options.Add(new Dropdown.OptionData("Distance"));
-            sortMethodDropdown.options.Add(new Dropdown.OptionData("Rarity"));
+            sortMethodDropdown.options.Add(new Dropdown.OptionData(Language.Price));
+            sortMethodDropdown.options.Add(new Dropdown.OptionData(Language.Distance));
+            sortMethodDropdown.options.Add(new Dropdown.OptionData(Language.Rarity));
             sortMethodDropdown.value = Main.lastSort.Value;
 
             ButtonClickedEvent searchButtonEvent = new ButtonClickedEvent();
@@ -142,7 +144,7 @@ namespace MC_SVSelectNearestSectorWith
             List<int> ids = GetItemIDs();
             if (ids == null || ids.Count == 0)
             {
-                InfoPanelControl.inst.ShowWarning("Invalid search criteria.", 1, false);
+                InfoPanelControl.inst.ShowWarning(Language.InvalidSearchCriteria, 1, false);
                 return;
             }
 
@@ -150,7 +152,7 @@ namespace MC_SVSelectNearestSectorWith
             results = GetResults(ids);
             if (results == null || results.Count == 0)
             {
-                InfoPanelControl.inst.ShowWarning("No results found.", 1, false);
+                InfoPanelControl.inst.ShowWarning(Language.NoResultsFound, 1, false);
                 return;
             }
 
@@ -227,11 +229,11 @@ namespace MC_SVSelectNearestSectorWith
             // Populate
             if (resultItem == null)
             {
-                resultListItem.transform.Find("ItemName").GetComponent<Text>().text = "<b>Item Name</b>";
-                resultListItem.transform.Find("Station").GetComponent<Text>().text = "<b>Station</b>";
-                resultListItem.transform.Find("Sector").GetComponent<Text>().text = "<b>Sector</b>";
-                resultListItem.transform.Find("Price").GetComponent<Text>().text = "<b>Price</b>";
-                resultListItem.transform.Find("Distance").GetComponent<Text>().text = "<b>Dist.</b>";
+                resultListItem.transform.Find("ItemName").GetComponent<Text>().text = "<b>" + Language.ItemName + "</b>";
+                resultListItem.transform.Find("Station").GetComponent<Text>().text = "<b>" + Language.Station + "</b>";
+                resultListItem.transform.Find("Sector").GetComponent<Text>().text = "<b>" + Language.Sector + "</b>";
+                resultListItem.transform.Find("Price").GetComponent<Text>().text = "<b>" + Language.Price + "</b>";
+                resultListItem.transform.Find("Distance").GetComponent<Text>().text = "<b>" + Language.Dist + "</b>";
             }
             else
             {

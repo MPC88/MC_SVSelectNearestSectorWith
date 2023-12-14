@@ -43,8 +43,17 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\Libraries\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>..\..\Libraries\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
     <Reference Include="BepInEx">
       <HintPath>..\..\Libraries\BepInEx.dll</HintPath>
+    </Reference>
+    <Reference Include="com.rlabrecque.steamworks.net">
+      <HintPath>..\..\Libraries\com.rlabrecque.steamworks.net.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Security">
+      <HintPath>..\..\Libraries\Mono.Security.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\Libraries\UnityEngine.dll</HintPath>

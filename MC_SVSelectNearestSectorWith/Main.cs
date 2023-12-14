@@ -51,6 +51,8 @@ namespace MC_SVSelectNearestSectorWith
             GameObject pack = assets.LoadAsset<GameObject>("Assets/mc_marketsearch.prefab");
             Assets.marketSearchPanel = pack.transform.Find("mc_marketSearchPanel").gameObject;
             Assets.marketSearchResultItem = pack.transform.Find("mc_marketSearchItem").gameObject;
+
+            Language.Load(pluginfolder + "\\MC_SVSelectNearestSectorWithLang.txt");
         }
 
         public void Update()
@@ -71,7 +73,7 @@ namespace MC_SVSelectNearestSectorWith
                 questButton.name = "BtnFindNearestQuest";
                 Destroy(questButton.transform.Find("Cost").gameObject);
                 questButton.SetActive(true);
-                questButton.GetComponentInChildren<Text>().text = "Nearest Quest";
+                questButton.GetComponentInChildren<Text>().text = Language.NearestQuest;
                 questButton.SetActive(false);
                 Button.ButtonClickedEvent btnClickEvent = new Button.ButtonClickedEvent();
                 btnClickEvent.AddListener(new UnityAction(QuestBtnClick));
@@ -93,7 +95,7 @@ namespace MC_SVSelectNearestSectorWith
                 ravagerButton.name = "BtnFindNearestRavager";
                 Destroy(ravagerButton.transform.Find("Cost").gameObject);
                 ravagerButton.SetActive(true);
-                ravagerButton.GetComponentInChildren<Text>().text = "Nearest Ravager";
+                ravagerButton.GetComponentInChildren<Text>().text = Language.NearestRavager;
                 ravagerButton.SetActive(false);
                 Button.ButtonClickedEvent btnClickEvent = new Button.ButtonClickedEvent();
                 btnClickEvent.AddListener(new UnityAction(RavagerBtnClick));
@@ -115,7 +117,7 @@ namespace MC_SVSelectNearestSectorWith
                 stationButton.name = "BtnFindNearestStation";
                 Destroy(stationButton.transform.Find("Cost").gameObject);
                 stationButton.SetActive(true);
-                stationButton.GetComponentInChildren<Text>().text = "Nearest Station";
+                stationButton.GetComponentInChildren<Text>().text = Language.NearestStation;
                 stationButton.SetActive(false);
                 Button.ButtonClickedEvent btnClickEvent = new Button.ButtonClickedEvent();
                 btnClickEvent.AddListener(new UnityAction(StationButtonClick));
@@ -163,7 +165,7 @@ namespace MC_SVSelectNearestSectorWith
                 marketSearchButton.name = "BtnMarketSearch";
                 Destroy(marketSearchButton.transform.Find("Cost").gameObject);
                 marketSearchButton.SetActive(true);
-                marketSearchButton.GetComponentInChildren<Text>().text = "Market Search";
+                marketSearchButton.GetComponentInChildren<Text>().text = Language.MarketSearch;
                 marketSearchButton.SetActive(false);
                 marketSearchButton.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
                 Button.ButtonClickedEvent btnClickEvent = new Button.ButtonClickedEvent();
@@ -236,7 +238,7 @@ namespace MC_SVSelectNearestSectorWith
             }
 
             if (closestSector == null)
-                InfoPanelControl.inst.ShowWarning("No station found.", 1, false);
+                InfoPanelControl.inst.ShowWarning(Language.NoStationFound, 1, false);
             else
                 GalaxyMap.instance.MoveCameraTo(closestSector, true);
 
@@ -269,7 +271,7 @@ namespace MC_SVSelectNearestSectorWith
             }
 
             if (closestSector == null)
-                InfoPanelControl.inst.ShowWarning("No ravager found.", 1, false);
+                InfoPanelControl.inst.ShowWarning(Language.NoRavagerFound, 1, false);
             else
                 GalaxyMap.instance.MoveCameraTo(closestSector, true);
         }
@@ -309,7 +311,7 @@ namespace MC_SVSelectNearestSectorWith
             }
 
             if (closestQuestSector == null)
-                InfoPanelControl.inst.ShowWarning("No quest sector found.", 1, false);
+                InfoPanelControl.inst.ShowWarning(Language.NoQuestSectorFound, 1, false);
             else
                 GalaxyMap.instance.MoveCameraTo(closestQuestSector, true);
         }
