@@ -15,7 +15,7 @@ namespace MC_SVSelectNearestSectorWith
     {
         public const string pluginGuid = "mc.starvalor.selectclosestsectorwithquest";
         public const string pluginName = "SV Select Closest Sector with...";
-        public const string pluginVersion = "1.0.8";
+        public const string pluginVersion = "1.0.9";
 
         private static GameObject questButton;
         private static GameObject ravagerButton;
