@@ -1,0 +1,24 @@
+Nearest Quest
+Nearest Ravager
+Nearest Station
+Market Search
+Item Type:
+Weapon
+Equipment
+Trade Good
+Ship
+Sort By:
+Price
+Distance
+Rarity
+Search
+Item Name
+Station
+Sector
+Dist.
+Close
+No station found.
+No ravager found.
+No quest sector found.
+Invalid search criteria.
+No results found.
