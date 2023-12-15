@@ -26,6 +26,6 @@ Language file is just line separated .txt.  Change to whatever you wish.  The on
   
 Language files can be found: https://github.com/MPC88/MC_SVSelectNearestSectorWith/tree/master/LanguageFiles  
   
-Download the file (or copy paste content).  Make sure file is renamed to remove "<LANGUAGE>_" from the filename e.g: "ENGLISH_MC_SVSelectNearestSectorWithLang.txt" becomes "MC_SVSelectNearestSectorWithLang.txt".  
+Download the file (or copy paste content).  Make sure file is renamed to remove "LANGUAGE_" from the filename e.g: "ENGLISH_MC_SVSelectNearestSectorWithLang.txt" becomes "MC_SVSelectNearestSectorWithLang.txt".  
   
 Russian translation by KelTuze.  
