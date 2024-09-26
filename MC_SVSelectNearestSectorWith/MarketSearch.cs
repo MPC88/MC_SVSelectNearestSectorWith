@@ -338,7 +338,7 @@ namespace MC_SVSelectNearestSectorWith
                                 results.Add(new ResultItem()
                                 {
                                     itemID = marketItem.itemID,
-                                    station = station.stationName,
+                                    station = station.stationName(false),
                                     price = GetPrice(station, marketItem, playerSS),
                                     rarity = marketItem.rarity,
                                     sectorID = station.sectorIndex,
@@ -355,7 +355,7 @@ namespace MC_SVSelectNearestSectorWith
                                 results.Add(new ResultItem()
                                 {
                                     itemID = marketItem.extraData.genItem.itemID,
-                                    station = station.stationName,
+                                    station = station.stationName(false),
                                     price = GetPrice(station, marketItem, playerSS),
                                     rarity = marketItem.extraData.genItem.rarity,
                                     sectorID = station.sectorIndex,
