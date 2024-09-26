@@ -41,10 +41,7 @@
       <HintPath>..\..\Libraries\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\Libraries\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\..\Libraries\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\..\Libraries\Beta\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>..\..\Libraries\BepInEx.dll</HintPath>

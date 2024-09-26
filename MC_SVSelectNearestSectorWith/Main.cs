@@ -323,7 +323,7 @@ namespace MC_SVSelectNearestSectorWith
             else if (questObjective.type == QuestObjectiveType.GoToSector)
                 return GameData.data.GetExistingSector(questObjective.par1, questObjective.par2);
             else if (questObjective.type == QuestObjectiveType.GoToStation)
-                return GameData.data.sectors[StationSystem.GetStation(questObjective.par1, true).sectorIndex];
+                return GameData.data.sectors[GameData.GetStation(questObjective.par1, true).sectorIndex];
             else if (questObjective.type == QuestObjectiveType.Clear_Eliminate)
                 return GameData.data.sectors[questObjective.par1];
 
