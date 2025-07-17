@@ -326,9 +326,9 @@ namespace MC_SVSelectNearestSectorWith
 
             foreach(Station station in GameData.data.stationList)
             {
-                if (station.discovered && !station.destroyed && station.GetMarket != null)
+                if (station.discovered && !station.Destroyed && station.GetMarketList != null)
                 {
-                    foreach (MarketItem marketItem in station.GetMarket)
+                    foreach (MarketItem marketItem in station.GetMarketList)
                     {
                         if (marketItem.InStock)
                         {
@@ -373,7 +373,7 @@ namespace MC_SVSelectNearestSectorWith
 
         private static float GetPrice(Station station, MarketItem marketItem, SpaceShip playerSS)
         {
-            GenericCargoItem genericCargoItem = new GenericCargoItem(marketItem.itemType, marketItem.itemID, marketItem.rarity, station.GetMarket, null, null, marketItem.extraData);
+            GenericCargoItem genericCargoItem = new GenericCargoItem(marketItem.itemType, marketItem.itemID, marketItem.rarity, station, null, null, marketItem.extraData);
             return MarketSystem.GetTradeModifier(genericCargoItem.unitPrice, marketItem.itemType, marketItem.itemID, false, station.factionIndex, playerSS);
         }
 

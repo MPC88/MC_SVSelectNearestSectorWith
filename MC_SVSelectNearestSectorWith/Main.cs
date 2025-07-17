@@ -225,7 +225,7 @@ namespace MC_SVSelectNearestSectorWith
                 {
                     Station station = null;
                     station = GameData.data.sectors[i].GetStation(faction, null, false, false);
-                    if (station != null && station.discovered && !station.destroyed)
+                    if (station != null && station.discovered && !station.Destroyed)
                     {
                         float tempDist = Mathf.Abs(Vector2.Distance(curSector.realPosV2, GameData.data.sectors[i].realPosV2));
                         if (distance == 0 || tempDist < distance)
