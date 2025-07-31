@@ -28,4 +28,5 @@ Language files can be found: https://github.com/MPC88/MC_SVSelectNearestSectorWi
   
 Download the file (or copy paste content).  Make sure file is renamed to remove "LANGUAGE_" from the filename e.g: "ENGLISH_MC_SVSelectNearestSectorWithLang.txt" becomes "MC_SVSelectNearestSectorWithLang.txt".  
   
-Russian translation by KelTuze.  
+Russian translation by KelTuze. 
+Spanish translation by KhalMika.  
