@@ -1,0 +1,24 @@
+Misión más cercana
+Ravager más cercano
+Estación más cercana
+Búsqueda de mercado
+Tipo de artículo:
+Arma
+Equipamiento
+Bienes
+Nave
+Ordenar por:
+Precio
+Distancia
+Rareza
+Buscar
+Nombre de artículo
+Estación
+Sector
+Distancia
+Cerrar
+No se encontraron estaciones.
+No se encontraron ravagers.
+No se encontró ningún sector de misión.
+Criterios de búsqueda no válidos.
+No se encontraron resultados.
