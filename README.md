@@ -11,7 +11,7 @@ Install
 3. Download latest mod release .zip archive.  
 4. Extract all files (MC_SVSelectNearestSectorWith.dll, mc_svselectnearestsectorwith and MC_SVSelectNearestSectorWith.txt) into .\SteamLibrary\steamapps\common\Star Valor\BepInEx\plugins\  
   
-Use  
+Use / Configuration  
 =====
 New buttons at top-left of galaxy map.  All buttons ignore current sector.  "Nearest" is as the crow flies, not necessarilly number of warps required.  
   
@@ -19,6 +19,10 @@ New buttons at top-left of galaxy map.  All buttons ignore current sector.  "Nea
 - Nearest ravager selects nearest sector with discovered and unkilled ravager.  
 - Nearest station provides a new set of buttons to pick a faction and then selects nearest sector with discovered station of that faction.  
 - Market search opens dialog to search for item types in all visited stations which have not been destroyed.  Results can be sorted by price or distance from current location.
+
+After first run, a configuration file mc.starvalor.selectnearestsectorwith.cfg will be created in .\Star Valor\BepInEx\Config\.  This file has only one setting to modify:
+Partial max %
+This sets the maximum % explored a sector can be to be considered "partially" explored.  E.g. if set to 75, a sector 80% explored will be ignored.  
   
 Language  
 =====  
