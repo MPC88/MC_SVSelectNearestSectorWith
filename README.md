@@ -20,8 +20,8 @@ New buttons at top-left of galaxy map.  All buttons ignore current sector.  "Nea
 - Nearest station provides a new set of buttons to pick a faction and then selects nearest sector with discovered station of that faction.  
 - Market search opens dialog to search for item types in all visited stations which have not been destroyed.  Results can be sorted by price or distance from current location.
 
-After first run, a configuration file mc.starvalor.selectnearestsectorwith.cfg will be created in .\Star Valor\BepInEx\Config\.  This file has only one setting to modify:
-Partial max %
+After first run, a configuration file mc.starvalor.selectnearestsectorwith.cfg will be created in .\Star Valor\BepInEx\Config\.  This file has only one setting to modify:  
+Partial max %  
 This sets the maximum % explored a sector can be to be considered "partially" explored.  E.g. if set to 75, a sector 80% explored will be ignored.  
   
 Language  
