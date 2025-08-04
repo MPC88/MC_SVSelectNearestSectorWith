@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.Serialization.Formatters;
 using UnityEngine;
 
 namespace MC_SVSelectNearestSectorWith
@@ -35,6 +36,10 @@ namespace MC_SVSelectNearestSectorWith
         internal static string NoQuestSectorFound = "No quest sector found.";
         internal static string InvalidSearchCriteria = "Invalid search criteria.";
         internal static string NoResultsFound = "No results found.";
+        internal static string ExplorationLevel = "Explored Level";
+        internal static string ExpLevelPartial = "Partial";
+        internal static string ExpLevelUn = "Unexplored";
+        internal static string NoSectorFound = "No sector found.";
 
         internal static void Load(string file)
         {
@@ -67,6 +72,10 @@ namespace MC_SVSelectNearestSectorWith
                     NoQuestSectorFound = sr.ReadLine();
                     InvalidSearchCriteria = sr.ReadLine();
                     NoResultsFound = sr.ReadLine();
+                    ExplorationLevel = sr.ReadLine();
+                    ExpLevelPartial = sr.ReadLine();
+                    ExpLevelUn = sr.ReadLine();
+                    NoSectorFound = sr.ReadLine();
                 }
             }
             catch

@@ -22,3 +22,7 @@ No ravager found.
 No quest sector found.
 Invalid search criteria.
 No results found.
+Explored Level
+Partial
+Unexplored
+No sector found.

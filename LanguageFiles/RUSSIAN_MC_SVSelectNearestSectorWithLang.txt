@@ -22,3 +22,7 @@ No ravager found.
 Квест не найден.
 Ошибка поиска.
 Нет результатов.
+Explored Level
+Partial
+Unexplored
+No sector found.

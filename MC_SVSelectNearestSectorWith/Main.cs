@@ -13,18 +13,21 @@ namespace MC_SVSelectNearestSectorWith
     [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
     public class Main : BaseUnityPlugin
     {
-        public const string pluginGuid = "mc.starvalor.selectclosestsectorwithquest";
-        public const string pluginName = "SV Select Closest Sector with...";
-        public const string pluginVersion = "2.0.0";
+        public const string pluginGuid = "mc.starvalor.selectnearestsectorwith";
+        public const string pluginName = "SV Select Nearest Sector with...";
+        public const string pluginVersion = "2.1.0";
 
         private static GameObject questButton;
         private static GameObject ravagerButton;
         private static GameObject stationButton;
         private static List<GameObject> factionButtons;
+        private static GameObject explorationLevelButton;
+        private static List<GameObject> exploreLevelButtons;
         private static GameObject marketSearchButton;
 
         internal static ConfigEntry<int> lastType;
         internal static ConfigEntry<int> lastSort;
+        internal static ConfigEntry<int> cfgPartialLevel;
 
         internal static ManualLogSource log = BepInEx.Logging.Logger.CreateLogSource(pluginName);
 
@@ -32,6 +35,11 @@ namespace MC_SVSelectNearestSectorWith
         {
             Harmony.CreateAndPatchAll(typeof(Main));
             LoadAssets();
+
+            cfgPartialLevel = Config.Bind<int>("Configuration",
+                "Partial max %",
+                75,
+                "Maximum % explored to be considered for nearest partially explored sector.");
 
             lastType = Config.Bind<int>("Memory",
                 "lastType",
@@ -159,6 +167,69 @@ namespace MC_SVSelectNearestSectorWith
             stationButton.SetActive(__instance.gameObject.activeSelf);
             factionButtons.ForEach(x => x.SetActive(false));
 
+            if (explorationLevelButton == null)
+            {
+                explorationLevelButton = Instantiate(___BtnWarp);
+                explorationLevelButton.name = "BtnExplorationLevels";
+                Destroy(explorationLevelButton.transform.Find("Cost").gameObject);
+                explorationLevelButton.SetActive(true);
+                explorationLevelButton.GetComponentInChildren<Text>().text = Language.ExplorationLevel;
+                explorationLevelButton.SetActive(false);
+                Button.ButtonClickedEvent btnClickEvent = new Button.ButtonClickedEvent();
+                btnClickEvent.AddListener(new UnityAction(ExploredButtonClick));
+                explorationLevelButton.GetComponentInChildren<Button>().onClick = btnClickEvent;
+                explorationLevelButton.transform.SetParent(questButton.transform.parent);
+                explorationLevelButton.layer = questButton.gameObject.layer;
+                explorationLevelButton.transform.localPosition = new Vector3(
+                    ___sliderFactionInfluence.transform.localPosition.x - (___BtnWarp.GetComponentInChildren<RectTransform>().rect.x),
+                    stationButton.transform.localPosition.y + (___BtnWarp.GetComponentInChildren<RectTransform>().rect.y * 1.1f),
+                    stationButton.transform.localPosition.z
+                    );
+                explorationLevelButton.transform.localScale = questButton.transform.localScale;
+
+                exploreLevelButtons = new List<GameObject>();
+
+                GameObject btn = Instantiate(___BtnWarp);
+                btn.name = "BtnExploredUnex";
+                Destroy(btn.transform.Find("Cost").gameObject);
+                btn.SetActive(true);
+                btn.GetComponentInChildren<Text>().text = Language.ExpLevelUn;
+                btn.SetActive(false);
+                Button.ButtonClickedEvent btnEvent = new Button.ButtonClickedEvent();
+                btnEvent.AddListener(() => ExploreLevelButtonClick(0));
+                btn.GetComponentInChildren<Button>().onClick = btnEvent;
+                btn.transform.SetParent(questButton.transform.parent);
+                btn.layer = questButton.gameObject.layer;
+                btn.transform.localPosition = new Vector3(
+                    explorationLevelButton.transform.localPosition.x - ((stationButton.GetComponentInChildren<RectTransform>().rect.x) * 2.1f),
+                    explorationLevelButton.transform.localPosition.y + ((___BtnWarp.GetComponentInChildren<RectTransform>().rect.y * 1.1f) * 0),
+                    explorationLevelButton.transform.localPosition.z
+                    );
+                btn.transform.localScale = questButton.transform.localScale;
+                exploreLevelButtons.Add(btn);
+
+                btn = Instantiate(___BtnWarp);
+                btn.name = "BtnExploredPar";
+                Destroy(btn.transform.Find("Cost").gameObject);
+                btn.SetActive(true);
+                btn.GetComponentInChildren<Text>().text = Language.ExpLevelPartial;
+                btn.SetActive(false);
+                btnEvent = new Button.ButtonClickedEvent();
+                btnEvent.AddListener(() => ExploreLevelButtonClick(1));
+                btn.GetComponentInChildren<Button>().onClick = btnEvent;
+                btn.transform.SetParent(questButton.transform.parent);
+                btn.layer = questButton.gameObject.layer;
+                btn.transform.localPosition = new Vector3(
+                    explorationLevelButton.transform.localPosition.x - ((stationButton.GetComponentInChildren<RectTransform>().rect.x) * 2.1f),
+                    explorationLevelButton.transform.localPosition.y + ((___BtnWarp.GetComponentInChildren<RectTransform>().rect.y * 1.1f) * 1),
+                    explorationLevelButton.transform.localPosition.z
+                    );
+                btn.transform.localScale = questButton.transform.localScale;
+                exploreLevelButtons.Add(btn);
+            }
+            explorationLevelButton.SetActive(__instance.gameObject.activeSelf);
+            exploreLevelButtons.ForEach(x => x.SetActive(false));
+
             if (marketSearchButton == null)
             {
                 marketSearchButton = Instantiate(___BtnWarp);
@@ -175,8 +246,8 @@ namespace MC_SVSelectNearestSectorWith
                 marketSearchButton.layer = questButton.gameObject.layer;
                 marketSearchButton.transform.localPosition = new Vector3(
                     ___sliderFactionInfluence.transform.localPosition.x - (___BtnWarp.GetComponentInChildren<RectTransform>().rect.x),
-                    stationButton.transform.localPosition.y + (___BtnWarp.GetComponentInChildren<RectTransform>().rect.y * 1.1f),
-                    stationButton.transform.localPosition.z
+                    explorationLevelButton.transform.localPosition.y + (___BtnWarp.GetComponentInChildren<RectTransform>().rect.y * 1.1f),
+                    explorationLevelButton.transform.localPosition.z
                     );
                 marketSearchButton.transform.localScale = questButton.transform.localScale;
             }
@@ -206,7 +277,53 @@ namespace MC_SVSelectNearestSectorWith
 
         private static void StationButtonClick()
         {
-            factionButtons.ForEach(x => x.SetActive(true));
+            factionButtons.ForEach(x => x.SetActive(!x.activeSelf));
+        }
+
+        private static void ExploredButtonClick()
+        {
+            exploreLevelButtons.ForEach(x => x.SetActive(!x.activeSelf));
+        }
+
+        private static void ExploreLevelButtonClick(int level)
+        {
+            // 0 = unex, 1 = partial
+
+            if (GalaxyMap.instance == null)
+                return;
+
+            TSector curSector = GameData.data.GetCurrentSector();
+            TSector closestSector = null;
+            float distance = 0;
+
+            for (int i = 0; i < GameData.data.sectors.Count; i++)
+            {
+                if (GameData.data.sectors[i] != curSector)
+                {                    
+                    float num = (GameData.data.sectors[i].fowXtiles + 1) * (GameData.data.sectors[i].fowYtiles + 1);
+                    float num2 = 0f;
+                    num2 = ((GameData.data.sectors[i].fow != null) ? ((float)GameData.data.sectors[i].fow.Count) : num);
+                    float explored = 1f - num2 / num; // 1 = explored fully
+
+                    if ((level == 1 && explored > 0 && explored < ((float)cfgPartialLevel.Value / 100) && explored < 1) || 
+                        (level == 0 && (GameData.data.sectors[i].fow == null || explored >= 1)))
+                    {
+                        float tempDist = Mathf.Abs(Vector2.Distance(curSector.realPosV2, GameData.data.sectors[i].realPosV2));
+                        if (distance == 0 || tempDist < distance)
+                        {
+                            closestSector = GameData.data.sectors[i];
+                            distance = tempDist;
+                        }
+                    }
+                }
+            }
+
+            if (closestSector == null)
+                InfoPanelControl.inst.ShowWarning(Language.NoSectorFound, 1, false);
+            else
+                GalaxyMap.instance.MoveCameraTo(closestSector, true);
+
+            exploreLevelButtons.ForEach(x => x.SetActive(false));
         }
 
         private static void FactionButtonClick(int faction)

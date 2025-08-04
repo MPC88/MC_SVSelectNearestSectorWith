@@ -22,3 +22,7 @@ No se encontraron ravagers.
 No se encontró ningún sector de misión.
 Criterios de búsqueda no válidos.
 No se encontraron resultados.
+Explored Level
+Partial
+Unexplored
+No sector found.
